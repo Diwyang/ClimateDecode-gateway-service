@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    consul:
+      host: ${CONSUL_HOST}
+      port: ${CONSUL_PORT}
+      discovery:
+        health-check-interval: 60s
+    gateway:
+      default-filters:
+        #        - RewritePath=/(?<base>.*?)/(?<segment>.*)/ping, /ping
+        #        - RewritePath=/(?<base>.*?)/(?<segment>.*), /$\{segment}
+         #TokenRelay=
+         #RemoveRequestHeader=Cookie
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**,/api/users 
+          filters:
+            - RewritePath=/(?<base>.*?)/(?<segment>.*)/ping, /ping
+            - RewritePath=/(?<base>.*?)/(?<segment>.*), /$\{segment}
+        - id: event-service
+          uri: lb://event-service
+          predicates:
+            - Path=/api/events/**
+          filters:
+            - RewritePath=/(?<base>.*?)/(?<segment>.*)/ping, /ping
+            - RewritePath=/(?<base>.*?)/(?<segment>.*), /$\{segment}
+        - id: event-emission-service
+          uri: lb://event-emission-service
+          predicates:
+            - Path=/api/emission/**
+          filters:
+            - RewritePath=/(?<base>.*?)/(?<segment>.*)/ping, /ping
+            - RewritePath=/(?<base>.*?)/(?<segment>.*), /$\{segment}
+
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME}
+    url: ${CD_DB_URL}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+server:
+  port: ${PORT:80}
+
+apigateway:
+  port: ${API_GATEWAY_PORT:80}
+
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
+      
+logging:  
+  level:    
+    org:
+      springframework:
+        cloud:
+          gateway: DEBUG
