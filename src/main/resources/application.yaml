@@ -40,7 +40,7 @@ spring:
             - RewritePath=/(?<base>.*?)/(?<segment>.*), /$\{segment}
 
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     password: ${DB_PASSWORD}
     username: ${DB_USERNAME}
     url: ${CD_DB_URL}
@@ -50,7 +50,9 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    
+    
 server:
   port: ${PORT:80}
 
@@ -65,7 +67,9 @@ management:
       enabled: true
       
 logging:  
-  level:    
+  level:
+    org.dozer: "debug"
+    org.hibernate: "error"    
     org:
       springframework:
         cloud:
