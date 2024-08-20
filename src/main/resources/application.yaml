@@ -6,7 +6,13 @@ spring:
       host: ${CONSUL_HOST}
       port: ${CONSUL_PORT}
       discovery:
-        health-check-interval: 60s
+        healthCheckPath: /actuator/health
+        healthCheckInterval: 20s
+        enabled: true
+        prefer-ip-address: true
+        #ip-address: localhost
+    inetutils:
+      ignored-interfaces: eth0
     gateway:
       default-filters:
         #        - RewritePath=/(?<base>.*?)/(?<segment>.*)/ping, /ping
@@ -52,6 +58,16 @@ spring:
      # hibernate:
       #  dialect: org.hibernate.dialect.MySQL8Dialect
     
+management:
+  endpoints:
+    health:
+      show-details: always
+      db:
+        enabled: false
+    web:
+      exposure:
+        include: health
+        base-path: /actuator
     
 server:
   port: ${PORT:80}
@@ -59,12 +75,6 @@ server:
 apigateway:
   port: ${API_GATEWAY_PORT:80}
 
-management:
-  endpoints:
-    enabled-by-default: false
-  endpoint:
-    health:
-      enabled: true
       
 logging:  
   level:
